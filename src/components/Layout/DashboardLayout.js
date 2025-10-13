@@ -8,6 +8,7 @@ import {
   LayoutDashboard, Users, Calendar, Package, FileText, 
   Receipt, Menu, X, LogOut, Bell 
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
@@ -54,15 +55,28 @@ export default function DashboardLayout({ children }) {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">E</span>
+              {/* ✅ FIXED LOGO SECTION */}
+              <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+                <Image
+                  src="/medioralogo.jpeg" // ✅ make sure file is in /public/medioralogo.jpeg
+                  width={40}
+                  height={40}
+                  alt="logo"
+                  className="object-cover"
+                />
               </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">EMR System</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">
+                EMR System
+              </span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -131,9 +145,9 @@ export default function DashboardLayout({ children }) {
           >
             <Menu className="w-6 h-6" />
           </button>
-          
+
           <div className="flex-1" />
-          
+
           <div className="flex items-center space-x-4">
             <button className="relative text-gray-500 hover:text-gray-700">
               <Bell className="w-6 h-6" />
@@ -143,9 +157,7 @@ export default function DashboardLayout({ children }) {
         </div>
 
         {/* Page content */}
-        <main className="p-4 lg:p-8">
-          {children}
-        </main>
+        <main className="p-4 lg:p-8">{children}</main>
       </div>
     </div>
   );
