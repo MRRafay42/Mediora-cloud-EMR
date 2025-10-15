@@ -9,6 +9,7 @@ import {
   Receipt, Menu, X, LogOut, Bell 
 } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function DashboardLayout({ children }) {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('doctor');
+    toast.success("Signout successfully")
     router.push('/login');
   };
 
@@ -126,7 +128,7 @@ export default function DashboardLayout({ children }) {
             </div>
             <button
               onClick={handleLogout}
-              className="mt-3 w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+              className=" cursor-pointer mt-3 w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout

@@ -448,6 +448,47 @@ export async function generateInvoicePDF(invoice, doctor) {
 export async function generatePrescriptionPDF(prescription, doctor) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.width;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   
   // Header - Medical Prescription
   doc.setFillColor(16, 185, 129); // Green

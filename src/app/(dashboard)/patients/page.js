@@ -494,6 +494,7 @@ import {
   Calendar, Activity, AlertCircle, Heart, FileText, Eye,
   Download, Filter, UserPlus, Users, TrendingUp
 } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState([]);
@@ -562,7 +563,7 @@ export default function PatientsPage() {
       setPatients(data.patients || []);
       setFilteredPatients(data.patients || []);
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error('Error fetching patients:', error)&toast.error("error fetching patient")
     } finally {
       setLoading(false);
     }
@@ -590,14 +591,14 @@ export default function PatientsPage() {
         fetchPatients();
         setShowModal(false);
         resetForm();
-        alert(`Patient ${editingPatient ? 'updated' : 'added'} successfully!`);
+        toast.success(`Patient ${editingPatient ? 'updated' : 'added'} successfully!`);
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to save patient');
+        toast.error(error.error || 'Failed to save patient');
       }
     } catch (error) {
       console.error('Error saving patient:', error);
-      alert('Failed to save patient');
+      toast.error('Failed to save patient');
     }
   };
 
@@ -638,13 +639,13 @@ export default function PatientsPage() {
 
       if (response.ok) {
         fetchPatients();
-        alert('Patient deleted successfully');
+        toast.success('Patient deleted successfully');
       } else {
-        alert('Failed to delete patient');
+        toast.error('Failed to delete patient');
       }
     } catch (error) {
       console.error('Error deleting patient:', error);
-      alert('Failed to delete patient');
+      toast.error('Failed to delete patient');
     }
   };
 

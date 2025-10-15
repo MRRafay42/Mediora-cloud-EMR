@@ -133,6 +133,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -175,6 +176,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        toast.error("login failed wrong user name and password")
         throw new Error(data.error || 'Login failed');
       }
 
@@ -182,6 +184,7 @@ export default function LoginPage() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('doctor', JSON.stringify(data.doctor));
 
+      toast.success("login successfully")
       // Force redirect to dashboard
       window.location.href = '/dashboard';
     } catch (err) {
@@ -243,7 +246,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed"
+            className="cursor-pointer w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

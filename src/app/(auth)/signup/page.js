@@ -196,6 +196,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -249,6 +250,7 @@ export default function SignupPage() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('doctor', JSON.stringify(data.doctor));
 
+      toast.success("Signup Successfully")
       // Force redirect to dashboard
       window.location.href = '/dashboard';
     } catch (err) {
@@ -365,7 +367,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed"
+            className="cursor-pointer w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
