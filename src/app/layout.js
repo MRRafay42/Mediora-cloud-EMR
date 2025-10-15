@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthCheck from "@/components/AuthCheck";
+import ToastProvider from "@/components/ToastProvider"; // ✅ import new provider
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
         <AuthCheck>
 
         {children}
+        <ToastProvider /> {/* ✅ client-side toast rendering */}
         </AuthCheck>
       </body>
     </html>
