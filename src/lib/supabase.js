@@ -1,398 +1,8 @@
-// // src/lib/supabase.js
-// import { createClient } from '@supabase/supabase-js';
-
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// if (!supabaseUrl || !supabaseAnonKey) {
-//   throw new Error('Missing Supabase environment variables');
-// }
-
-// export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-//   auth: {
-//     persistSession: false,
-//     autoRefreshToken: false,
-//   },
-// });
-
-// // Database helper functions
-// export const db = {
-
-//   supabase: supabase,
-//   // Doctors
-//   async createDoctor(doctor) {
-//     const { data, error } = await supabase
-//       .from('doctors')
-//       .insert([doctor])
-//       .select()
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async getDoctorByEmail(email) {
-//     const { data, error } = await supabase
-//       .from('doctors')
-//       .select('*')
-//       .eq('email', email)
-//       .single();
-    
-//     if (error && error.code !== 'PGRST116') throw error;
-//     return data;
-//   },
-
-//   async getDoctorById(id) {
-//     const { data, error } = await supabase
-//       .from('doctors')
-//       .select('*')
-//       .eq('id', id)
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   // Patients
-//   async createPatient(patient) {
-//     const { data, error } = await supabase
-//       .from('patients')
-//       .insert([patient])
-//       .select()
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async getPatientsByDoctorId(doctorId) {
-//     const { data, error } = await supabase
-//       .from('patients')
-//       .select('*')
-//       .eq('doctor_id', doctorId)
-//       .order('created_at', { ascending: false });
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async getPatientById(id) {
-//     const { data, error } = await supabase
-//       .from('patients')
-//       .select('*')
-//       .eq('id', id)
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async updatePatient(id, updates) {
-//     const { data, error } = await supabase
-//       .from('patients')
-//       .update(updates)
-//       .eq('id', id)
-//       .select()
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async deletePatient(id) {
-//     const { error } = await supabase
-//       .from('patients')
-//       .delete()
-//       .eq('id', id);
-    
-//     if (error) throw error;
-//   },
-
-//   // Appointments
-//   async createAppointment(appointment) {
-//     const { data, error } = await supabase
-//       .from('appointments')
-//       .insert([appointment])
-//       .select(`
-//         *,
-//         patient:patients(*)
-//       `)
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async getAppointmentsByDoctorId(doctorId) {
-//     const { data, error } = await supabase
-//       .from('appointments')
-//       .select(`
-//         *,
-//         patient:patients(*)
-//       `)
-//       .eq('doctor_id', doctorId)
-//       .order('appointment_date', { ascending: true })
-//       .order('appointment_time', { ascending: true });
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async updateAppointment(id, updates) {
-//     const { data, error } = await supabase
-//       .from('appointments')
-//       .update(updates)
-//       .eq('id', id)
-//       .select(`
-//         *,
-//         patient:patients(*)
-//       `)
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async deleteAppointment(id) {
-//     const { error } = await supabase
-//       .from('appointments')
-//       .delete()
-//       .eq('id', id);
-    
-//     if (error) throw error;
-//   },
-
-//   // Medicine Inventory
-//   async createMedicine(medicine) {
-//     const { data, error } = await supabase
-//       .from('medicine_inventory')
-//       .insert([medicine])
-//       .select()
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async getMedicinesByDoctorId(doctorId) {
-//     const { data, error } = await supabase
-//       .from('medicine_inventory')
-//       .select('*')
-//       .eq('doctor_id', doctorId)
-//       .order('medicine_name', { ascending: true });
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async updateMedicine(id, updates) {
-//     const { data, error } = await supabase
-//       .from('medicine_inventory')
-//       .update(updates)
-//       .eq('id', id)
-//       .select()
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async deleteMedicine(id) {
-//     const { error } = await supabase
-//       .from('medicine_inventory')
-//       .delete()
-//       .eq('id', id);
-    
-//     if (error) throw error;
-//   },
-
-//   async getLowStockMedicines(doctorId) {
-//     const { data, error } = await supabase
-//       .from('medicine_inventory')
-//       .select('*')
-//       .eq('doctor_id', doctorId)
-//       .filter('quantity_in_stock', 'lte', 'reorder_level')
-//       .order('quantity_in_stock', { ascending: true });
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   // Prescriptions
-//   async createPrescription(prescription, items) {
-//     // Create prescription
-//     const { data: prescriptionData, error: prescError } = await supabase
-//       .from('prescriptions')
-//       .insert([prescription])
-//       .select()
-//       .single();
-    
-//     if (prescError) throw prescError;
-
-//     // Create prescription items
-//     const itemsWithPrescriptionId = items.map(item => ({
-//       ...item,
-//       prescription_id: prescriptionData.id,
-//     }));
-
-//     const { data: itemsData, error: itemsError } = await supabase
-//       .from('prescription_items')
-//       .insert(itemsWithPrescriptionId)
-//       .select();
-    
-//     if (itemsError) throw itemsError;
-
-//     return { ...prescriptionData, items: itemsData };
-//   },
-
-//   async getPrescriptionsByDoctorId(doctorId) {
-//     const { data, error } = await supabase
-//       .from('prescriptions')
-//       .select(`
-//         *,
-//         patient:patients(*),
-//         items:prescription_items(*)
-//       `)
-//       .eq('doctor_id', doctorId)
-//       .order('created_at', { ascending: false });
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async getPrescriptionById(id) {
-//     const { data, error } = await supabase
-//       .from('prescriptions')
-//       .select(`
-//         *,
-//         patient:patients(*),
-//         items:prescription_items(*)
-//       `)
-//       .eq('id', id)
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   // Invoices
-//   async createInvoice(invoice, items) {
-//     // Create invoice
-//     const { data: invoiceData, error: invoiceError } = await supabase
-//       .from('invoices')
-//       .insert([invoice])
-//       .select()
-//       .single();
-    
-//     if (invoiceError) throw invoiceError;
-
-//     // Create invoice items
-//     const itemsWithInvoiceId = items.map(item => ({
-//       ...item,
-//       invoice_id: invoiceData.id,
-//     }));
-
-//     const { data: itemsData, error: itemsError } = await supabase
-//       .from('invoice_items')
-//       .insert(itemsWithInvoiceId)
-//       .select();
-    
-//     if (itemsError) throw itemsError;
-
-//     // Update inventory quantities
-//     for (const item of items) {
-//       const { data: medicine } = await supabase
-//         .from('medicine_inventory')
-//         .select('quantity_in_stock')
-//         .eq('id', item.medicine_id)
-//         .single();
-
-//       if (medicine) {
-//         await supabase
-//           .from('medicine_inventory')
-//           .update({ 
-//             quantity_in_stock: medicine.quantity_in_stock - item.quantity 
-//           })
-//           .eq('id', item.medicine_id);
-//       }
-//     }
-
-//     return { ...invoiceData, items: itemsData };
-//   },
-
-//   async getInvoicesByDoctorId(doctorId) {
-//     const { data, error } = await supabase
-//       .from('invoices')
-//       .select(`
-//         *,
-//         patient:patients(*),
-//         items:invoice_items(*)
-//       `)
-//       .eq('doctor_id', doctorId)
-//       .order('created_at', { ascending: false });
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async getInvoiceById(id) {
-//     const { data, error } = await supabase
-//       .from('invoices')
-//       .select(`
-//         *,
-//         patient:patients(*),
-//         items:invoice_items(*)
-//       `)
-//       .eq('id', id)
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   async updateInvoice(id, updates) {
-//     const { data, error } = await supabase
-//       .from('invoices')
-//       .update(updates)
-//       .eq('id', id)
-//       .select()
-//       .single();
-    
-//     if (error) throw error;
-//     return data;
-//   },
-
-//   // Dashboard Statistics
-//   async getDashboardStats(doctorId) {
-//     const [patients, appointments, medicines, invoices] = await Promise.all([
-//       supabase.from('patients').select('id', { count: 'exact' }).eq('doctor_id', doctorId),
-//       supabase.from('appointments').select('id', { count: 'exact' }).eq('doctor_id', doctorId),
-//       supabase.from('medicine_inventory').select('id', { count: 'exact' }).eq('doctor_id', doctorId),
-//       supabase.from('invoices').select('id', { count: 'exact' }).eq('doctor_id', doctorId),
-//     ]);
-
-//     return {
-//       totalPatients: patients.count || 0,
-//       totalAppointments: appointments.count || 0,
-//       totalMedicines: medicines.count || 0,
-//       totalInvoices: invoices.count || 0,
-//     };
-//   },
-
-//   // Audit Logs
-//   async createAuditLog(log) {
-//     const { error } = await supabase
-//       .from('audit_logs')
-//       .insert([log]);
-    
-//     if (error) console.error('Audit log error:', error);
-//   },
-// };
 
 
-// made with rafay40claude
 
-// src/lib/supabase.js
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -408,6 +18,39 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: false,
   },
 });
+
+// Helper function to generate unique invoice number per doctor
+async function generateInvoiceNumber(doctorId) {
+  const year = new Date().getFullYear();
+  
+  // Get the count of invoices for this specific doctor in the current year
+  const { data: existingInvoices, error } = await supabase
+    .from('invoices')
+    .select('invoice_number')
+    .eq('doctor_id', doctorId)
+    .like('invoice_number', `INV-${year}-%`)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error('Error fetching invoices:', error);
+    throw error;
+  }
+
+  let nextNumber = 1;
+  
+  if (existingInvoices && existingInvoices.length > 0) {
+    // Extract the number from the last invoice (e.g., "INV-2025-00001" -> 1)
+    const lastInvoiceNumber = existingInvoices[0].invoice_number;
+    const lastNumber = parseInt(lastInvoiceNumber.split('-')[2]);
+    nextNumber = lastNumber + 1;
+  }
+
+  // Format: INV-YEAR-XXXXX (e.g., INV-2025-00001)
+  const invoiceNumber = `INV-${year}-${String(nextNumber).padStart(5, '0')}`;
+  
+  return invoiceNumber;
+}
 
 // Database helper functions
 export const db = {
@@ -580,6 +223,17 @@ export const db = {
     return data;
   },
 
+  async getMedicineById(id) {
+    const { data, error } = await supabase
+      .from('medicine_inventory')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
   async updateMedicine(id, updates) {
     const { data, error } = await supabase
       .from('medicine_inventory')
@@ -702,47 +356,61 @@ export const db = {
 
   // Invoices
   async createInvoice(invoice, items) {
-    // Create invoice
-    const { data: invoiceData, error: invoiceError } = await supabase
-      .from('invoices')
-      .insert([invoice])
-      .select()
-      .single();
-    
-    if (invoiceError) throw invoiceError;
+    try {
+      // Generate unique invoice number for this doctor
+      const invoiceNumber = await generateInvoiceNumber(invoice.doctor_id);
 
-    // Create invoice items
-    const itemsWithInvoiceId = items.map(item => ({
-      ...item,
-      invoice_id: invoiceData.id,
-    }));
-
-    const { data: itemsData, error: itemsError } = await supabase
-      .from('invoice_items')
-      .insert(itemsWithInvoiceId)
-      .select();
-    
-    if (itemsError) throw itemsError;
-
-    // Update inventory quantities
-    for (const item of items) {
-      const { data: medicine } = await supabase
-        .from('medicine_inventory')
-        .select('quantity_in_stock')
-        .eq('id', item.medicine_id)
+      // Create invoice with generated invoice number
+      const { data: invoiceData, error: invoiceError } = await supabase
+        .from('invoices')
+        .insert([{
+          ...invoice,
+          invoice_number: invoiceNumber
+        }])
+        .select()
         .single();
+      
+      if (invoiceError) throw invoiceError;
 
-      if (medicine) {
-        await supabase
+      // Create invoice items
+      const itemsWithInvoiceId = items.map(item => ({
+        ...item,
+        invoice_id: invoiceData.id,
+      }));
+
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('invoice_items')
+        .insert(itemsWithInvoiceId)
+        .select();
+      
+      if (itemsError) throw itemsError;
+
+      // Update inventory quantities
+      for (const item of items) {
+        const { data: medicine } = await supabase
           .from('medicine_inventory')
-          .update({ 
-            quantity_in_stock: medicine.quantity_in_stock - item.quantity 
-          })
-          .eq('id', item.medicine_id);
-      }
-    }
+          .select('quantity_in_stock')
+          .eq('id', item.medicine_id)
+          .single();
 
-    return { ...invoiceData, items: itemsData };
+        if (medicine) {
+          const newStock = medicine.quantity_in_stock - item.quantity;
+          
+          await supabase
+            .from('medicine_inventory')
+            .update({ quantity_in_stock: newStock })
+            .eq('id', item.medicine_id);
+        }
+      }
+
+      // Fetch complete invoice with items and patient
+      const completeInvoice = await this.getInvoiceById(invoiceData.id);
+
+      return completeInvoice;
+    } catch (error) {
+      console.error('Create invoice error:', error);
+      throw error;
+    }
   },
 
   async getInvoicesByDoctorId(doctorId) {
